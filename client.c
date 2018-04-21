@@ -86,8 +86,6 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	//printf("arguments: hostname:%s , cmd:%s\n", hostname,cmd);
-
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_socktype = SOCK_STREAM;
 	hint.ai_canonname = NULL;
@@ -95,14 +93,14 @@ int main(int argc, char *argv[])
 	hint.ai_next = NULL;
 	if ((err = getaddrinfo(hostname, "cs671processinfo", &hint, &ailist)) != 0)
 		err_quit("getaddrinfo error: %s", gai_strerror(err));
-	for (aip = ailist; aip != NULL; aip = aip->ai_next) {
+	for (aip = ailist; aip != NULL; aip = aip->ai_next) { // try to connect to the specified host and service
 		if ((sockfd = connect_retry(aip->ai_family, SOCK_STREAM, 0,
 		  aip->ai_addr, aip->ai_addrlen)) < 0) {
 			err = errno;
 		} else {
-			printf("sent command: %s\n", cmd);
-			send(sockfd,cmd,1+strlen(cmd),0);
-			print_response(sockfd);
+			//printf("sent command: %s\n", cmd);
+			send(sockfd,cmd,1+strlen(cmd),0); // send the command
+			print_response(sockfd); // print the server's response
 			exit(0);
 		}
 	}

@@ -13,7 +13,7 @@
 
 #define QLEN 10
 
-void print_query(int sockfd)
+char get_query(int sockfd)
 {
 	int n;
 	char buf[BUFLEN];
@@ -23,8 +23,7 @@ void print_query(int sockfd)
 		if (n < 0)
 			err_sys("recv error");
 	}while (n == 0); // wait until we get command (while loop in case we get interrupted)
-	write(STDOUT_FILENO, buf, n);
-	printf("\n");
+	return buf[0];
 }
 
 int initserver(int type, const struct sockaddr *addr, socklen_t alen, int qlen)
@@ -55,6 +54,12 @@ void serve(int sockfd)
 {
 	int		clfd, status;
 	pid_t	pid;
+	char command;
+	// shell command that lists files in current directory, filters by .dat files,
+	//sorts by filename (here by date thanks to filenaming),
+	// limits results to latest file, and sends the filename to cat to display it
+	char * getLatestSummary = "ls | grep '_proc.dat' | sort -r | head -n 1 | xargs cat"; // relative path OK because server is started next to agent. in real life I would choose a fixed absolute path and use it, but you wouldn't be able to test it easily on your computer.
+	char * getCurrentData =   "./getData"; // same
 
 	set_cloexec(sockfd);
 	for (;;) {
@@ -63,8 +68,7 @@ void serve(int sockfd)
 			  strerror(errno));
 			exit(1);
 		}
-		printf("received command: \n");
-		print_query(clfd);
+		command = get_query(clfd);
 		if ((pid = fork()) < 0) {
 			syslog(LOG_ERR, "server: fork error: %s",
 			  strerror(errno));
@@ -83,9 +87,15 @@ void serve(int sockfd)
 				exit(1);
 			}
 			close(clfd);
-			execl("/usr/bin/uptime", "uptime", (char *)0);
-			syslog(LOG_ERR, "server: unexpected return from exec: %s",
-			  strerror(errno));
+			if(command == 'c') {
+				execl(getCurrentData, "getCurrentData", (char *)0);
+			} else if(command == 's') {
+				execl("/bin/sh", "getSummary", "-c", getLatestSummary ,(char *)0);
+			} else {
+				fprintf(stderr, "error, invalid query"); // sent to socket because of redirection
+				exit(1);
+			}
+			syslog(LOG_ERR, "server: unexpected return from exec: %s", strerror(errno));
 		} else {		/* parent */
 			close(clfd);
 			waitpid(pid, &status, 0);
@@ -108,7 +118,7 @@ int main(int argc, char *argv[])
 		err_sys("malloc error");
 	if (gethostname(host, n) < 0)
 		err_sys("gethostname error");
-	//daemonize("ruptimed"); // todo: reactivate
+	daemonize("serverDaemon");
 	memset(&hint, 0, sizeof(hint));
 	hint.ai_flags = AI_CANONNAME;
 	hint.ai_socktype = SOCK_STREAM;

@@ -107,8 +107,12 @@ void daemonize(const char *cmd)
 	 * Change the current working directory to the root so
 	 * we won't prevent file systems from being unmounted.
 	 */
-	if (chdir("/") < 0)
+	// deactivated for easy presentation, because in real life i would not need relative paths
+	// i would know the absolute path of my executables (probably /bin or /usr/bin) and the path of their logs
+	/*if (chdir("/") < 0)
 		err_quit("%s: can't change directory to /", cmd);
+	*/
+
 
 	/*
 	 * Close all open file descriptors.
