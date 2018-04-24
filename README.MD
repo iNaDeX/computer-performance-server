@@ -1,4 +1,6 @@
-# Performance Statistics Agent.
+# Performance Statistics Server.
+
+Server daemon that serves performance statistics of UNIX machines to remote clients. It uses an <a href="https://github.com/iNaDeX/computer-performance-agent/">agent</a> to continuously collect and summarize statistics from the /proc filesystem.
 
 gcc server.c libapue.c libapue.h -o server
 gcc client.c libapue.c libapue.h -o client
