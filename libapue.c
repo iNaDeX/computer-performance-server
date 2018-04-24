@@ -1,4 +1,6 @@
 #include "libapue.h"
+// helper functions from the book Advanced Programming in the UNIX Environment 3rd Edition
+// http://www.apuebook.com/apue3e.html
 
 /*
  * Print a message and return to caller.

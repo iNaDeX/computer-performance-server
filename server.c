@@ -13,6 +13,8 @@
 
 #define QLEN 10
 
+// code based from samples from the book http://www.apuebook.com/apue3e.html
+
 char get_query(int sockfd)
 {
 	int n;
@@ -125,7 +127,7 @@ int main(int argc, char *argv[])
 	hint.ai_canonname = NULL;
 	hint.ai_addr = NULL;
 	hint.ai_next = NULL;
-	if ((err = getaddrinfo(host, "cs671processinfo", &hint, &ailist)) != 0) {
+	if ((err = getaddrinfo(host, "processinfo", &hint, &ailist)) != 0) {
 		syslog(LOG_ERR, "server: getaddrinfo error: %s",
 		  gai_strerror(err));
 		exit(1);

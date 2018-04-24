@@ -9,6 +9,8 @@
 
 #define MAXSLEEP 128
 
+// code based from samples from the book http://www.apuebook.com/apue3e.html
+
 void print_response(int sockfd)
 {
 	int		n;
@@ -91,7 +93,7 @@ int main(int argc, char *argv[])
 	hint.ai_canonname = NULL;
 	hint.ai_addr = NULL;
 	hint.ai_next = NULL;
-	if ((err = getaddrinfo(hostname, "cs671processinfo", &hint, &ailist)) != 0)
+	if ((err = getaddrinfo(hostname, "processinfo", &hint, &ailist)) != 0)
 		err_quit("getaddrinfo error: %s", gai_strerror(err));
 	for (aip = ailist; aip != NULL; aip = aip->ai_next) { // try to connect to the specified host and service
 		if ((sockfd = connect_retry(aip->ai_family, SOCK_STREAM, 0,

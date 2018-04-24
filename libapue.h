@@ -23,7 +23,8 @@
 #define HOST_NAME_MAX 256
 #endif
 
-// code from the book Advanced Programming in the UNIX Environment 3rd Edition
+// helper functions from the book Advanced Programming in the UNIX Environment 3rd Edition
+// http://www.apuebook.com/apue3e.html
 void print_response(int sockfd);
 static void err_doit(int errnoflag, int error, const char *fmt, va_list ap);
 void err_sys(const char *fmt, ...);
